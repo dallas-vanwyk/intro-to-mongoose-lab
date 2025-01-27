@@ -44,7 +44,7 @@ const main = async () => {
         process.exit();
     };
 
-    const actionPrompt = () => {
+    const actionPrompt = async () => {
 
         console.log(`
 What would you like to do?
@@ -60,6 +60,10 @@ What would you like to do?
         console.log(``);
         console.log(`you chose action ${actionChoice}`);
 
+
+
+        
+
         switch (actionChoice) {
             case '1':
                 createCustomer();
@@ -74,13 +78,13 @@ What would you like to do?
                 deleteCustomer();
                 break;
             case '5':
-                quit();
+                await quit();
                 // console.log(`Action 5: quit`);
                 // disconnect();
                 break;
             default:
                 console.log('please choose an option 1-5')
-                actionPrompt();
+                // actionPrompt();
                 break;
 
         };
@@ -102,17 +106,19 @@ What would you like to do?
     };
 
     // function 2: view all customers
-    const viewAllCustomers = () => {
+    const viewAllCustomers = async () => {
         console.log(`Action 2: view all customers`);
         console.log(``);
 
+        const customer = await Customer.find({});
+        console.log(`All customers: \n, ${customer}`);
         // retrieve all customers from mongoDB
         // print to console
 
     };
 
     // function 3: update a customer
-    const updateCustomer = () => {
+    const updateCustomer = async () => {
         console.log(`Action 3: update a customer`);
         console.log(``);
 
@@ -123,7 +129,7 @@ What would you like to do?
     };
 
     // function 4: delete a customer
-    const deleteCustomer = () => {
+    const deleteCustomer = async () => {
         console.log(`Action 4: delete a customer`);
         console.log(``);
 
@@ -158,7 +164,7 @@ What would you like to do?
     // use a WHILE loop to repeat actionPrompt
     while (true) {
         // actionSelect(actionPrompt());
-        actionPrompt();
+        await actionPrompt();
 
     }
 
