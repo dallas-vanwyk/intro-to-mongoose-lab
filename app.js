@@ -5,6 +5,8 @@
 const prompt = require('prompt-sync')();
 // the second () is because you don't want to return the package itself, but instead ... something else? supposedly explained in the package documentation
 
+const Customer = require('./models/customers');
+
 const dotenv = require('dotenv');
 dotenv.config();
 // also valid: require('dotenv').config;
@@ -29,12 +31,12 @@ const main = async () => {
     const connect = async () => {
         // connect to mongoDB using the MONGODB_URI specified in our .env file
         await mongoose.connect(process.env.MONGODB_URI);
-        // console.log('Connected to MongoDB');
+        console.log('Connected to MongoDB');
     };
-
 
     const disconnect = async () => {
         // Disconnect our app from MongoDB after our queries run.
+        console.log(`disconnect function has been started`)
         await mongoose.disconnect();
         console.log('Disconnected from MongoDB');
 
@@ -45,26 +47,19 @@ const main = async () => {
     const actionPrompt = () => {
 
         console.log(`
-        What would you like to do?
+What would you like to do?
         
-          1. Create a customer
-          2. View all customers
-          3. Update a customer
-          4. Delete a customer
-          5. quit
-        
-          `);
+  1. Create a customer
+  2. View all customers
+  3. Update a customer
+  4. Delete a customer
+  5. quit
+        `);
 
         let actionChoice = prompt(`Enter the number of the action to run: `);
         console.log(``);
-        // console.log(actionChoice);
-        actionSelect(actionChoice);
-    };
+        console.log(`you chose action ${actionChoice}`);
 
-
-
-    const actionSelect = (actionChoice) => {
-        // this maybe could be done cleaner/DRYer 
         switch (actionChoice) {
             case '1':
                 createCustomer();
@@ -80,27 +75,30 @@ const main = async () => {
                 break;
             case '5':
                 quit();
+                // console.log(`Action 5: quit`);
+                // disconnect();
                 break;
             default:
                 console.log('please choose an option 1-5')
                 actionPrompt();
                 break;
+
         };
+
+
     };
 
     // function 1: create customer
-    const createCustomer = () => {
+    const createCustomer = async () => {
         console.log(`Action 1: create a customer`);
         console.log(``);
-        let customerName = prompt(`Enter customer name: `);
-
-        // and here is where the route will go
-
-
-        // input customer name and other info
-        // add to database
-        // print a confirmation
-
+        const customerName = prompt(`Enter customer name: `);
+        const customerAge = prompt(`Enter customer age: `);
+        const customer = await Customer.create({
+            name: customerName,
+            age: parseInt(customerAge),
+        })
+        console.log(`New customer ${customerName} of age ${customerAge} has been added to the database.`)
     };
 
     // function 2: view all customers
@@ -119,7 +117,7 @@ const main = async () => {
         console.log(``);
 
         // pick customer from the database
-        // update hte info
+        // update the info
         // print confirmation of customer updat to teh console
 
     };
@@ -140,7 +138,12 @@ const main = async () => {
         console.log(`Action 5: quit`);
 
         // disconnect from database
-        disconnect();
+        await disconnect();
+
+        // quit process
+        process.exit();
+
+        console.log(`process exit was invoked...`)
     };
 
     // ---------------------------------------------------- code to run
@@ -152,18 +155,17 @@ const main = async () => {
     const username = prompt('What is your name? ');
     console.log(`Welcome to the CRM application, ${username}\n`);
 
-    let actionChoice = '';
-    actionPrompt();
+    // use a WHILE loop to repeat actionPrompt
+    while (true) {
+        // actionSelect(actionPrompt());
+        actionPrompt();
 
+    }
 
-
-    // disconnect from database
-    await disconnect();
 };
 
 
-
-// ------------------------------------------ functions to run on file run
+// ------------------------------------------ functions to run on file execution
 
 main();
 
